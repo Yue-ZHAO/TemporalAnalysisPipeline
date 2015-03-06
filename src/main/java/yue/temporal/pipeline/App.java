@@ -73,8 +73,7 @@ public class App
         System.out.println( "STEP 4 is finished!!" );
         
         //	TODO STEP 5: using WEKA to classify the paragraphs based on the features extracted in STEP 4.
-        System.out.println( "STEP 5: using WEKA to classify the paragraphs based on the features extracted in STEP 4." );
-        
-        System.out.println( "STEP 5 is finished!!" );
+        //	System.out.println( "STEP 5: using WEKA to classify the paragraphs based on the features extracted in STEP 4." );        
+        //	System.out.println( "STEP 5 is finished!!" );
     }
 }
