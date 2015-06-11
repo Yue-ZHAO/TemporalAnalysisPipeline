@@ -123,8 +123,10 @@ public class IADownloader {
 	}
 	
 	public static void downloadPages(List<String> urls, String subTargetFolder) throws ClientProtocolException, IOException, URISyntaxException, InterruptedException{
+		int i = 0;
 		for (String url: urls){
 			//	format URL
+			long begintime = System.currentTimeMillis();
 			URL url1 = new URL(url);
 			String nullFragment = null;
 			URI uri = new URI(url1.getProtocol(), url1.getHost(), url1.getPath(), url1.getQuery(), nullFragment);
@@ -150,10 +152,15 @@ public class IADownloader {
 			   	while((inByte = bis.read()) != -1) 
 			   		bos.write(inByte);
 			    bis.close();
-			    bos.close();	        	
+			    bos.close();
+			    System.out.print("Historical version: " + url.substring(28, 40) + ". ");
 			} finally {
 				httpResponse.close();
-				TimeUnit.SECONDS.sleep(1);
+				long endtime = System.currentTimeMillis();
+				System.out.print("Time cost is: " + (endtime - begintime) + ". ");
+				i++;
+				System.out.println(i + "/" + urls.size() + " Completed.");
+				// TimeUnit.SECONDS.sleep(1);
 			}
 			httpClient.close();
 		}	
@@ -173,6 +180,7 @@ public class IADownloader {
 			
 			//	Generate the sub-folder of this url in the target folder
 			File subTargetFolder = FileProcess.generateSubFolder(originalURL, targetFolder);
+			//	null means that the historical pages have been downloaded
 			if (subTargetFolder == null)
 				return 0;
 			String subTargetFolderPath = subTargetFolder.getAbsolutePath();

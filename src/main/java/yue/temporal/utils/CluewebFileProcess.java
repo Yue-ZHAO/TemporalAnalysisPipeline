@@ -1,11 +1,13 @@
 package yue.temporal.utils;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,12 +72,62 @@ public class CluewebFileProcess {
 		return url;
 	}
 	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+	public static String readURLFromCluewebFile(File file) throws IOException {
+		String url = "";
+		
+		//	Read the file line by line to find the URL
+		InputStream fis;
+		BufferedReader br;
+		String line;
+		
+		fis = new FileInputStream(file);
+		br = new BufferedReader(new InputStreamReader(fis));
+		
+		while ((line = br.readLine()) != null) {
+		    //	Deal with the line
+			if ((line.contains("WARC-Target-URI:"))&&(line.length() > 20)) {
+				url = line.substring(17);
+				break;
+			}
+		}
 
+		//	Done with the file
+		br.close();
+		br = null;
+		fis = null;
+		
+		return url;
 	}
+	
+	public static String readURLFromCluewebFileString(String cluewebFileContent) throws IOException {
+		String url = "";
+		
+		//	Read the file line by line to find the URL
+		InputStream fis;
+		BufferedReader br;
+		String line;
+		
+		fis = new ByteArrayInputStream(cluewebFileContent.getBytes(StandardCharsets.UTF_8));
+		br = new BufferedReader(new InputStreamReader(fis));
+		
+		while ((line = br.readLine()) != null) {
+		    //	Deal with the line
+			if ((line.contains("WARC-Target-URI:"))&&(line.length() > 20)) {
+				url = line.substring(17);
+				break;
+			}
+		}
 
-	public static String readTimeFromCluewebFile(String filePath_TargetPage) throws IOException {
+		//	Done with the file
+		br.close();
+		br = null;
+		fis = null;
+		
+		return url;
+	}
+	
+
+	public static String readTimeFromCluewebFile(String filePath) throws IOException {
 		
 		String timestamp = "";
 		
@@ -84,7 +136,7 @@ public class CluewebFileProcess {
 		BufferedReader br;
 		String line;
 		
-		fis = new FileInputStream(filePath_TargetPage);
+		fis = new FileInputStream(filePath);
 		br = new BufferedReader(new InputStreamReader(fis));
 		
 		while ((line = br.readLine()) != null) {
@@ -101,6 +153,130 @@ public class CluewebFileProcess {
 		fis = null;
 		
 		return timestamp;
+	}
+	
+	public static String readTimeFromCluewebFile(File file) throws IOException {
+		
+		String timestamp = "";
+		
+		//	Read the file line by line to find the URL
+		InputStream fis;
+		BufferedReader br;
+		String line;
+		
+		fis = new FileInputStream(file);
+		br = new BufferedReader(new InputStreamReader(fis));
+		
+		while ((line = br.readLine()) != null) {
+		    //	Deal with the line to find the time stamp of a file in Clueweb 12
+			if ((line.contains("WARC-Date:"))&&(line.length() > 15)) {
+				timestamp = line.substring(11, 21);
+				break;
+			}
+		}
+
+		//	Done with the file
+		br.close();
+		br = null;
+		fis = null;
+		
+		return timestamp;
+	}
+	
+	public static String readTimeFromCluewebFileString(String cluewebFileContent) throws IOException {
+		
+		String timestamp = "";
+		
+		//	Read the file line by line to find the URL
+		InputStream fis;
+		BufferedReader br;
+		String line;
+		
+		fis = new ByteArrayInputStream(cluewebFileContent.getBytes(StandardCharsets.UTF_8));
+		br = new BufferedReader(new InputStreamReader(fis));
+		
+		while ((line = br.readLine()) != null) {
+		    //	Deal with the line to find the time stamp of a file in Clueweb 12
+			if ((line.contains("WARC-Date:"))&&(line.length() > 15)) {
+				timestamp = line.substring(11, 21);
+				break;
+			}
+		}
+
+		//	Done with the file
+		br.close();
+		br = null;
+		fis = null;
+		
+		return timestamp;
+	}
+	
+	public static String readTrecIDFromCluewebFileString(String cluewebFileContent) throws IOException {
+		
+		String timestamp = "";
+		
+		//	Read the file line by line to find the URL
+		InputStream fis;
+		BufferedReader br;
+		String line;
+		
+		fis = new ByteArrayInputStream(cluewebFileContent.getBytes(StandardCharsets.UTF_8));
+		br = new BufferedReader(new InputStreamReader(fis));
+		
+		while ((line = br.readLine()) != null) {
+		    //	Deal with the line to find the time stamp of a file in Clueweb 12
+			if ((line.contains("WARC-TREC-ID:"))&&(line.length() > 23)) {
+				timestamp = line.substring(14, 39);
+				break;
+			}
+		}
+
+		//	Done with the file
+		br.close();
+		br = null;
+		fis = null;
+		
+		return timestamp;
+	}
+	
+	public static void main(String[] args) throws IOException {
+		String content = FileProcess.readFile(args[0], StandardCharsets.UTF_8);
+		String url = readURLFromCluewebFileString(content);
+		String time = readTimeFromCluewebFileString(content);
+		String trecID = readTrecIDFromCluewebFileString(content);
+		System.out.println(url);
+		System.out.println(time);
+		System.out.println(trecID);
+	}
+
+	public static boolean isCluewebFile(File file_Clueweb) throws IOException {
+		
+		//	Read the file line by line to find the URL
+		InputStream fis;
+		BufferedReader br;
+		String line;
+		
+		fis = new FileInputStream(file_Clueweb);
+		br = new BufferedReader(new InputStreamReader(fis));
+		
+		int i = 0;
+		while ((line = br.readLine()) != null && i < 10) {
+		    //	Deal with the line to find the time stamp of a file in Clueweb 12
+			if (line.contains("WARC")) {
+				br.close();
+				br = null;
+				fis = null;
+				return true;
+			} else
+				i++;
+		}
+
+		//	Done with the file
+		br.close();
+		br = null;
+		fis = null;
+		
+		return false;
 	}
 
 }

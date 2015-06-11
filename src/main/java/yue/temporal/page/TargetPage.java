@@ -12,9 +12,9 @@ import yue.temporal.utils.CluewebFileProcess;
 import yue.temporal.utils.FileProcess;
 import yue.temporal.utils.HTMLParser;
 
-import de.l3s.boilerpipe.BoilerpipeProcessingException;
+//import de.l3s.boilerpipe.BoilerpipeProcessingException;
 
-public class TargetPage extends Page{
+public class TargetPage extends Page {
 	
 	// for string compare
 	static JaroWinklerTFIDF distanceJaroWinklerTFIDF = new JaroWinklerTFIDF();
@@ -37,20 +37,20 @@ public class TargetPage extends Page{
 	//	implement the Class Paragraph
 	public List<Paragraph> paragraphs = new ArrayList<Paragraph>();
 	
-	public int threshold_length = 0;
+	public int threshold_length = 50;
 	
-	public double threshold_similarity = 0;
+	public double threshold_similarity = 0.7;
 	
-	public TargetPage(String absPath_Page, String urlString, String timestamp, int lenThreshold, double simThreshold) throws NoSuchAlgorithmException, IOException, BoilerpipeProcessingException {
+	public TargetPage(String absPath_Page, String urlString, String timestamp, int lenThreshold, double simThreshold) throws NoSuchAlgorithmException, IOException {
 		File file_historicalPage = new File(absPath_Page);
 		pageInit(file_historicalPage, urlString, timestamp, lenThreshold, simThreshold);
 	}
 	
-	public TargetPage(File file_Page, String urlString, String timestamp, int lenThreshold, double simThreshold) throws NoSuchAlgorithmException, IOException, BoilerpipeProcessingException {
+	public TargetPage(File file_Page, String urlString, String timestamp, int lenThreshold, double simThreshold) throws NoSuchAlgorithmException, IOException {
 		pageInit(file_Page, urlString, timestamp, lenThreshold, simThreshold);
 	}
 	
-	private void pageInit(File file_Page, String urlString, String timestamp, int lenThreshold, double simThreshold) throws NoSuchAlgorithmException, IOException, BoilerpipeProcessingException {
+	private void pageInit(File file_Page, String urlString, String timestamp, int lenThreshold, double simThreshold) throws NoSuchAlgorithmException, IOException {
 		
 		this.URL = urlString;
 		this.currentTimestamp = timestamp;
@@ -217,7 +217,7 @@ public class TargetPage extends Page{
 	}
 	
 	//	Main for test
-	public static void main(String[] args) throws IOException, NoSuchAlgorithmException, BoilerpipeProcessingException {
+	public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
 		//	Test for construct
 		//	1.	get the folder of target pages
     	String folderPath_TargetPage = args[0];

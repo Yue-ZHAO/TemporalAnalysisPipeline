@@ -3,12 +3,14 @@ package yue.temporal.utils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
+//	import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,13 +20,8 @@ import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
 //	import org.jsoup.select.NodeVisitor;
 
-
-
-
-
-
-import de.l3s.boilerpipe.BoilerpipeProcessingException;
-import de.l3s.boilerpipe.extractors.KeepEverythingExtractor;
+//import de.l3s.boilerpipe.BoilerpipeProcessingException;
+//import de.l3s.boilerpipe.extractors.KeepEverythingExtractor;
 
 public class HTMLParser {
 
@@ -68,21 +65,21 @@ public class HTMLParser {
 		return paragraphs;
 	}
 	
-	public static List<String> getPfromHTML_boilerpipe(File file_HistoricalPage, int minLength) throws IOException, BoilerpipeProcessingException {
-		List<String> paragraphs = new ArrayList<String>();
-		FileReader fr = new FileReader(file_HistoricalPage);
-		String text = KeepEverythingExtractor.INSTANCE.getText(fr);
-		String[] textList = text.trim().split("\n");
-		for (String textLine: textList) {
-			if((textLine.length() >= minLength) && 
-					(!textLine.startsWith("WARC")) && 
-					(!textLine.startsWith("Content-Length:")) && 
-					(!textLine.startsWith("Content-Type:"))) {
-				paragraphs.add(textLine);
-			}
-		}
-		return paragraphs;
-	}
+//	public static List<String> getPfromHTML_boilerpipe(File file_HistoricalPage, int minLength) throws IOException, BoilerpipeProcessingException {
+//		List<String> paragraphs = new ArrayList<String>();
+//		FileReader fr = new FileReader(file_HistoricalPage);
+//		String text = KeepEverythingExtractor.INSTANCE.getText(fr);
+//		String[] textList = text.trim().split("\n");
+//		for (String textLine: textList) {
+//			if((textLine.length() >= minLength) && 
+//					(!textLine.startsWith("WARC")) && 
+//					(!textLine.startsWith("Content-Length:")) && 
+//					(!textLine.startsWith("Content-Type:"))) {
+//				paragraphs.add(textLine);
+//			}
+//		}
+//		return paragraphs;
+//	}
 	
 	public static String extractTextFromHTML_jsoup(File file) throws IOException {
 	    
@@ -113,11 +110,11 @@ public class HTMLParser {
 	    return s_parse;
 	  }
 	
-	public static String extractTextFromHTML_boilerpipe(File file) throws IOException, BoilerpipeProcessingException {	    
-		FileReader fr = new FileReader(file);
-		String text = KeepEverythingExtractor.INSTANCE.getText(fr);
-		return text;
-	}
+//	public static String extractTextFromHTML_boilerpipe(File file) throws IOException, BoilerpipeProcessingException {	    
+//		FileReader fr = new FileReader(file);
+//		String text = KeepEverythingExtractor.INSTANCE.getText(fr);
+//		return text;
+//	}
 	
 	public static String br2nl(String html) {
 	    if(html==null)
@@ -134,11 +131,25 @@ public class HTMLParser {
 	public static String br2nl(File htmlFile) throws IOException {
 
 	    Document document = Jsoup.parse(htmlFile, "UTF-8");
-	    document.outputSettings(new Document.OutputSettings().prettyPrint(false));//makes html() preserve linebreaks and spacing
-	    document.select("br").append("\\n");
-	    document.select("p").prepend("\\n\\n");
-	    document.select("div").prepend("\\n\\n");
-	    String s = document.html().replaceAll("\\\\n", "\n");
+//	    System.out.println(document.html());
+//	    System.out.println();
+//	    System.out.println("--------------------------");
+//	    System.out.println();
+	    
+	    //  //makes html() preserve linebreaks and spacing
+	    //	document.outputSettings(new Document.OutputSettings().prettyPrint(false)); 
+	    //	System.out.println(document.html());
+	    
+//	    document.select("br").append("\\n");
+//	    document.select("p").prepend("\\n\\n");
+//	    document.select("div").prepend("\\n\\n");
+//	    
+//	    String s = document.html().replaceAll("\\\\n", "\n");
+//	    document.select("br").append("tags2nl_zy");
+	    document.select("p").prepend("tags2nl_zy");
+	    document.select("div").prepend("tags2nl_zy");
+	    
+	    String s = document.html();
 	    return Jsoup.clean(s, "", Whitelist.relaxed(), new Document.OutputSettings().prettyPrint(false));	    
 	}	
 	
@@ -146,7 +157,11 @@ public class HTMLParser {
 		
 		List<String> paragraphs = new ArrayList<String>();
 		String text = br2nl(htmlFile);
-		String[] textList = text.trim().split("\n");
+		Pattern p = Pattern.compile("\\s+");
+		Matcher m = p.matcher(text);
+		String text2 = m.replaceAll(" ");
+		
+		String[] textList = text2.trim().split("tags2nl_zy");
 		for (String textLine: textList) {
 			String textLine2 = Jsoup.parse(textLine.trim().toString()).text();
 			if((textLine2.trim().length() >= minLength) && 
@@ -178,10 +193,17 @@ public class HTMLParser {
 		return startPos;
 	}
 
-    public static void main( String[] args ) throws IOException, BoilerpipeProcessingException {
+    public static void main( String[] args ) throws IOException {
     	//getPfromHTML("/Users/yuezhao/GoogleDrive/HistoricalPagesForClueweb12/downloadPages5/ffd3c78233e9259fc1f5edbf96ba486c/201211110446.html", 50);    	
     	File file = new File("/Users/yuezhao/Desktop/clueweb12-0000wb-31-12737.html");
-//    	System.out.println(br2nl(file));
+//    	String text1 = br2nl(file);
+//    	System.out.println(text1);
+//	    System.out.println();
+//	    System.out.println("--------------------------");
+//	    System.out.println();
+//	    
+//    	String text2 = Jsoup.parse(text1.trim().toString()).text();
+//    	System.out.println(text2);
 //    	System.out.println();
 //    	System.out.println("---------------------------------------");
 //    	System.out.println();
@@ -189,10 +211,10 @@ public class HTMLParser {
 //    	System.out.println();
 //    	System.out.println("---------------------------------------");
 //    	System.out.println();
-    	System.out.println(extractTextFromHTML_jsoup(file));
-    	System.out.println();
-    	System.out.println("---------------------------------------");
-    	System.out.println();
+//    	System.out.println(extractTextFromHTML_jsoup(file));
+//    	System.out.println();
+//    	System.out.println("---------------------------------------");
+//    	System.out.println();
 //    	System.out.println(extractTextFromHTML_jsoup2(file));
 //    	System.out.println();
 //    	System.out.println("---------------------------------------");
@@ -201,9 +223,11 @@ public class HTMLParser {
     	
     	
     	List<String> testSrings = getPfromHTML_br2nl(file, 1);
+    	File resultFile = new File("/Users/yuezhao/Desktop/result2");
     	for (String testString: testSrings) {
     		System.out.println(testString);
-    		//System.out.println();
+    		FileProcess.addLinetoaFile(testString, resultFile.getAbsolutePath());
+//			System.out.println();
     	}
     	
 //		File input = new File("/Users/yuezhao/Desktop/clueweb12-0000wb-31-12737.html");

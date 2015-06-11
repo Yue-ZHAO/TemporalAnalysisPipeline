@@ -39,7 +39,9 @@ public class TaggedPageReader {
         			flagForTaggedPage++;
         		} else if (lineFile.startsWith("#Number of Paragraph Timestamps: ")) {
         			numOfTimestamps = Integer.parseInt(lineFile.substring(33));
+        			flagForTaggedPage++;
         		} else if (lineFile.startsWith("#List of Paragraph Timestamps: ")) {
+        			flagForTaggedPage++;
         			if (numOfTimestamps > 0) {
         				String paraTimestamps = lineFile.substring(31).trim();
         				String[] paraTimestampsList = paraTimestamps.split(" ");

@@ -3,11 +3,16 @@ package yue.temporal.utils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.security.MessageDigest;
@@ -72,11 +77,67 @@ public class FileProcess {
 		fis = null;
 		
 		return listURLS;
-	}
+	}	
 	
 	public static List<String> readFileLineByLine(String sourceFilePath) throws IOException{
 		final File sourceFile = new File(sourceFilePath);
 		return readFileLineByLine(sourceFile);
+	}
+	
+	public static String readFileIntoLine(final File sourceFile) throws IOException{		
+		//	Use to store URLs extracted from the files
+		String fileLine = "";
+
+		//	Read the file line by line to find the URL
+		InputStream fis;
+		BufferedReader br;
+		String line;
+			
+		fis = new FileInputStream(sourceFile);
+		br = new BufferedReader(new InputStreamReader(fis));
+			
+		while ((line = br.readLine()) != null) {
+			//	Deal with the line
+			fileLine = fileLine + line;
+		}
+
+		//	Done with the file
+		br.close();
+		br = null;
+		fis = null;
+		
+		return fileLine;
+	}
+	
+	public static String readFile(String path, Charset encoding) throws IOException {
+		byte[] encoded = Files.readAllBytes(Paths.get(path));
+		return new String(encoded, encoding);
+	}
+	
+	public static String readFileIntoJSON(final File sourceFile) throws IOException{		
+		//	Use to store URLs extracted from the files
+		String fileLine = "[";
+
+		//	Read the file line by line to find the URL
+		InputStream fis;
+		BufferedReader br;
+		String line;
+			
+		fis = new FileInputStream(sourceFile);
+		br = new BufferedReader(new InputStreamReader(fis));
+			
+		while ((line = br.readLine()) != null) {
+			//	Deal with the line
+			fileLine = fileLine + line + ",";
+		}
+		fileLine = fileLine.substring(0, fileLine.length()-1) + "]";
+
+		//	Done with the file
+		br.close();
+		br = null;
+		fis = null;
+		
+		return fileLine;
 	}
 	
 	public static String stringTrans_MD5(String URL) throws NoSuchAlgorithmException{
@@ -115,7 +176,6 @@ public class FileProcess {
 		// not using JAVA 7 API
 		File dir = new File(targetFolder, subFolderName);
 		
-		// TODO avoid the problem that the MD5 conflict, needed?
 		if (!dir.exists())
 			dir.mkdir();
 		else
@@ -178,7 +238,26 @@ public class FileProcess {
 		return paragraphs;
 	}
 	
-
+	public static void nioTransferCopy(File source, File target) throws IOException {
+        FileChannel in = null;
+        FileChannel out = null;
+        FileInputStream inStream = null;
+        FileOutputStream outStream = null;
+        try {
+            inStream = new FileInputStream(source);
+            outStream = new FileOutputStream(target);
+            in = inStream.getChannel();
+            out = outStream.getChannel();
+            in.transferTo(0, in.size(), out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            inStream.close();
+            in.close();
+            outStream.close();
+            out.close();
+        }
+    }
 	
 	public static void main(String[] args) {
 
